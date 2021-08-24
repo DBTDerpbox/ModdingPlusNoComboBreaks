@@ -33,12 +33,22 @@ typedef TOptions = {
     var preferJudgement:Int;
     var newJudgementPos:Bool;
     var emuOsuLifts:Bool;
-    var skipDebugScreen:Bool;
     var showComboBreaks:Bool;
     var useKadeHealth:Bool;
     var useMissStun:Bool;
     var offset:Float;
     var accuracyMode:AccuracyMode;
+    var danceMode:Bool;
+    var dontMuteMiss:Bool;
+    //var moddingOptions:Bool;
+    //var funnyOptions:Bool;
+    var allowStoryMode:Bool;
+    var allowFreeplay:Bool;
+    var allowDonate:Bool;
+    var hitSounds:Bool;
+    var titleToggle:Bool;
+    var fpsCap:Int;
+    var ignoreVile:Bool;
 }
 /**
  * OptionsHandler Handles options : )
@@ -59,10 +69,43 @@ class OptionsHandler {
         // update the file
         if (needToRefresh) {
 			lastOptions = CoolUtil.parseJson(FNFAssets.getJson('assets/data/options'));
-            // sawee
-            // i think this is for the best, to be a real rhythm game
             needToRefresh = false;
 			
+        }
+        // these are the canon options
+        // if your options aren't these it isn't canon
+        if (lastOptions.danceMode) {
+            lastOptions.skipVictoryScreen = false;
+			lastOptions.skipModifierMenu = true; // i'm going to use a special thing to do it
+			lastOptions.alwaysDoCutscenes = false;
+			lastOptions.useCustomInput = true;
+            lastOptions.allowEditOptions = false;
+            lastOptions.useSaveDataMenu = false;
+            // lastOptions.downscroll // we are going to add this to a special new menu
+            lastOptions.preferredSave = 0;
+            lastOptions.style = true;
+            lastOptions.stressTankmen = false; // sorry guys no funny songs  : (
+            lastOptions.ignoreUnlocks = true; // If we are in an arcade a person won't have enough time to unlock everything
+            // lastOptions.preferJudgement // going to the new menu
+            // lastOptions.judge // new menu
+			lastOptions.newJudgementPos = true;
+			lastOptions.emuOsuLifts = false;
+            // lastOptions.skipDebugScreen // i'm removing debug entirely in dance mode
+            // lastOptions.showComboBreaks // i'm going to add this to the special new menu
+            lastOptions.useKadeHealth = false;
+            // lastOptions.offset // i'll remove it from options, but json can still be edited. perfect those things!
+            lastOptions.useMissStun = false;
+			lastOptions.accuracyMode = Simple;
+            lastOptions.dontMuteMiss = true;
+            //lastOptions.moddingOptions = true;
+            //lastOptions.funnyOptions = true;
+            lastOptions.allowStoryMode = true;
+            lastOptions.allowFreeplay = true;
+            lastOptions.allowDonate = false;
+            lastOptions.hitSounds = false;
+            lastOptions.titleToggle = true;
+            lastOptions.fpsCap = 60;
+
         }
 		return lastOptions;
         #else

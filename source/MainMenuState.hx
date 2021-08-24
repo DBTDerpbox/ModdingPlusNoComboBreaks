@@ -13,6 +13,9 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
 import lime.app.Application;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.FlxObject;
 #if sys
 import sys.io.File;
 import haxe.io.Path;
@@ -40,9 +43,9 @@ class MainMenuState extends MusicBeatState
 	var parsedcustomMenuConfirmJson:Array<Array<String>>;
 	var menuItems:FlxTypedGroup<FlxSprite>;
 	#if !switch
-	var optionShit:Array<String> = ['story mode', 'freeplay', 'donate', 'options'];
+	var optionShit:Array<String> = FNFAssets.getText("assets/data/menuitems.txt").split("\n");
 	#else
-	var optionShit:Array<String> = ['story mode', 'freeplay'];
+	var optionShit:Array<String> = FNFAssets.getText("assets/data/menuitems.txt").split("\n");
 	#end
 	var menuSoundJson:Dynamic;
 	var scrollSound:String;
@@ -53,14 +56,21 @@ class MainMenuState extends MusicBeatState
 	{
 		#if windows
 		// Updating Discord Rich Presence
-		Discord.DiscordClient.changePresence("In Menus", null);
+		var customPrecence = FNFAssets.getText("assets/discord/presence/mainmenu.txt");
+		Discord.DiscordClient.changePresence(customPrecence, null);
 		#end
 		menuSoundJson = CoolUtil.parseJson(FNFAssets.getText("assets/sounds/custom_menu_sounds/custom_menu_sounds.json"));
 		scrollSound = menuSoundJson.customMenuScroll;
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
-		if (!OptionsHandler.options.useSaveDataMenu) 
-			optionShit = ['story mode', 'freeplay', 'donate'];
+		if (!OptionsHandler.options.allowStoryMode) 
+			optionShit.remove("story mode");
+		if (!OptionsHandler.options.allowFreeplay) 
+			optionShit.remove("freeplay");
+		if (!OptionsHandler.options.allowDonate) 
+			optionShit.remove("donate");
+		if (!OptionsHandler.options.useSaveDataMenu && !OptionsHandler.options.allowEditOptions) 
+			optionShit.remove("options");
 		if (!FlxG.sound.music.playing)
 		{
 			FlxG.sound.playMusic(FNFAssets.getSound('assets/music/custom_menu_music/'
@@ -100,13 +110,12 @@ class MainMenuState extends MusicBeatState
 
 		for (i in 0...optionShit.length)
 		{
-			var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
+			var menuItem:FlxSprite = new FlxSprite(0, 100 + (i * 160));
 			menuItem.frames = tex;
 			menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
 			menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
 			menuItem.animation.play('idle');
 			menuItem.ID = i;
-			menuItem.screenCenter(X);
 			menuItems.add(menuItem);
 			menuItem.scrollFactor.set();
 			menuItem.antialiasing = true;
@@ -195,9 +204,9 @@ class MainMenuState extends MusicBeatState
 				if (optionShit[curSelected] == 'donate')
 				{
 					#if linux
-					Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
+					Sys.command('/usr/bin/xdg-open', [FNFAssets.getText("assets/data/donate_button_link.txt"), "&"]);
 					#else
-					FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
+					FlxG.openURL(FNFAssets.getText("assets/data/donate_button_link.txt"));
 					#end
 				}
 				else
